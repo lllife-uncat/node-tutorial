@@ -11,15 +11,27 @@ var bodyParser = require("body-parser");
 var methodOverride = require("method-override");
 var route = require("./server/route");
 
+/**
+* Init express instance.
+*/
 var app = express();
 var port = 8888;
 
+/**
+* Config express application.
+*/
 app.use(express.static(__dirname + "/public"));
 app.use(morgan("dev"));
 app.use(bodyParser());
 app.use(methodOverride());
 
-route(app);
+/**
+* Apply route configuration.
+*/
+route.apply(app);
 
+/**
+* Start listen ...
+*/
 app.listen(port);
 console.log("magick start @" + port);

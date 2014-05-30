@@ -1,5 +1,6 @@
 var model = require("./db").model;
 var Book = model.Book;
+var Base = model.Base;
 
 /**
 * Function route()
@@ -13,20 +14,21 @@ function route(app) {
   });
 
   app.get("/book", function(req, res){
-    Book.findAll(function(err, docs){
+    Base.findAll("Books", function(err, docs){
       res.json(docs);
     });
   });
 
   app.post("/book/query", function(req, res){
-    Book.findByExample(req.body, function(err, docs){
+    Base.findByExample("Books", req.body, function(err, docs){
       res.json(docs);
     });
   });
 
   app.post("/book", function(req, res){
     var book = Book.create(req.body);
-    book.insert(function(err, doc){
+    console.log(book);
+    book.save(function(err, doc){
       if(!err && doc){
         res.json(doc);
       }else {
@@ -40,4 +42,4 @@ function route(app) {
 /**
 * Export only route function.
 */
-module.exports =  route;
+module.exports.apply =  route;

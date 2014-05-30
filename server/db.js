@@ -6,44 +6,89 @@ var configs = {
 var db = mongojs(configs.connectionString);
 
 /**
-* Class Boook.
-* @member {string} entity
-* @member {String} ttitle
-* @member {String} author
-* @member {Function} insert
+* Base class.
+* @member {Date} create
+* @api public
 */
-function Book() {
-  this.title = null;
-  this.author = null;
-  this.date = null;
+function Base() {
+  this.create = new Date();
 }
 
-Book.entity = "Books";
-
-Book.create = function(book) {
-  book.date = new Date(book.date);
-  book.insert = Book.prototype.insert;
-  return book;
-}
-
-Book.findByExample = function(ex, callback) {
-  db.collection(Book.entity).find(ex, function(err, docs){
-    callback(err, docs);
-  });
-}
-
-Book.findAll = function(callback) {
-  db.collection(Book.entity).find(function(err, docs){
-    callback(err, docs);
-  });
-};
-
-Book.prototype.insert = function(callback) {
+/**
+* function save()
+* Save current object instance into database.
+* @param {Function} callback.
+* @api public
+*/
+Base.prototype.save = function(callback) {
   db.collection(this.entity).save(this, function(err, doc){
     callback(err, doc);
   });
 }
 
+/**
+* Find database record by given condition.
+* @param {String} entity: Collection name.
+* @param {Object} ex: Query condition.
+* @param {Function}} callback.
+* @api public
+*/
+Base.findByExample = function(entity, ex, callback) {
+  db.collection(entity).find(ex, function(err, docs){
+    callback(err, docs);
+  });
+}
+
+/**
+* Find all database record.
+* @param {String} entity: Collection name.
+* @param {Function} callback.
+* @api public
+*/
+Base.findAll = function(entity, callback) {
+  db.collection(entity).find(function(err, docs){
+    callback(err, docs);
+  });
+};
+
+
+/**
+* Class Boook.
+* @member {string} entity
+* @member {String} ttitle
+* @member {String} author
+* @member {Function} insert
+* @api public
+*/
+function Book(init) {
+  init = init || {};
+  this.entity = "Books";
+  this.title =  init.title;
+  this.author = init.author;
+  this.date = init.date;
+  Base.call(this);
+}
+
+/**
+* Inherite prototype from Base.
+*/
+Book.prototype = new Base();
+
+/**
+* Create Book instance with init data.
+* @param {Object} book.
+* @return {Object} new Book instatnce.
+* @api public
+*/
+Book.create = function(book) {
+  var book = new Book(book);
+  return book;
+}
+
+/**
+* Export all model class.
+*/
 module.exports.model = {
-  Book: Book
+  Book: Book,
+  Base: Base
 };

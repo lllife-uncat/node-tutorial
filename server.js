@@ -1,3 +1,10 @@
+/**
+* Load module
+* body-parse: parse url encode and json string.
+* method-override: read 'x-http-method-override' header and override method as PUT/DELETE.
+* morgan: petty log message.
+*/
+
 var express = require("express");
 var morgan = require("morgan");
 var bodyParser = require("body-parser");
